@@ -151,8 +151,10 @@ pages={1-5},
 keywords={biometrics (access control);cepstral analysis;feature extraction;signal detection;signal representation;speech processing;speech recognition;MFCC data;biometric technology;energy level detection;mel frequency cepstral coefficient analysis;personal identification system;representation method;segmented window;signal recording;speech recognition;speech signal processing;voiced signal detection;zero crossing extraction;Application software;Biomedical signal processing;Biometrics;Cepstral analysis;Data mining;Mel frequency cepstral coefficient;Multimedia systems;Speech analysis;Speech processing;Speech recognition}, 
 doi={10.1109/ICOCI.2006.5276486},}
 \end{filecontents}
-\usetheme{RJH}
+\usetheme{PSI}
 \usepackage{natbib}
+\usepackage{ragged2e}   %new code
+\addtobeamertemplate{block begin}{}{\justifying}  %new code
 \bibliographystyle{abbrv}
 \usepackage[orientation=portrait,size=a0,scale=1.4,debug]{beamerposter}
 \usepackage[absolute,overlay]{textpos}
@@ -213,9 +215,6 @@ Testing Stage
 \end{textblock}
 
 \begin{textblock}{39.5}(43.05,19)
-\begin{block}{My latest paper about frogs}
-Published in the \emph{Journal of Irreproducible Results}.
-\end{block}
 
 \begin{block}{Results}
 
