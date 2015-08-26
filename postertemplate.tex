@@ -6,13 +6,20 @@
 \usepackage{natbib}
 \usepackage{ragged2e}   % package for justifying
 %\usepackage[demo]{graphicx}
-\usepackage{subcaption}
+\usepackage{caption}
+%\usepackage{subcaption}
+%\usepackage[caption=false]{subfig}
+
 \addtobeamertemplate{block begin}{}{\justifying}  %new code
 \bibliographystyle{abbrv}
 \usepackage[orientation=portrait,size=a0,scale=1.4,debug]{beamerposter}
 \usepackage[absolute,overlay]{textpos}
+
 \setlength{\TPHorizModule}{1cm}
 \setlength{\TPVertModule}{1cm}
+
+\captionsetup[figure]{labelformat=simple}
+\captionsetup[table]{labelformat=simple}
 
 \title{Voice Control for a Gripper Using Mel-Frequency Cepstral Coefficients and Gaussian Mixture Models}
 \author{Velasco-Hernandez, Gustavo $^{1}$. D\'{i}az-Toro, Andr\'{e}s Alejandro $^{2}$}
@@ -41,39 +48,51 @@ This work presents an implementation of a speaker-dependent speech recognition s
 
 \begin{block}{Methodology}
 
-The methodology developed along this work is based on two main features. The first one is that the system is focused on detecting isolated words; this means that the speaker will say words separated by silence spaces. The second feature is that the system detects words only for the speaker for whom the models were computed.
+The methodology developed along this work is based on two main features. The first one is that the system is focused on detecting isolated words; this means that the speaker will say words separated by silence spaces. The second feature is that the system detects words only for the speaker for whom the models were computed. The development of this system was divided into training stage (figure \ref{trainingBlocks}) and development stage (figure \ref{testingBlocks}). Training stage is intended to build acoustic model based on the utterances of speakers. Testing stage capture speech signal and use previously created models to validate it and execute commands.
 
 \begin{columns}[t]
 \column{.5\textwidth}
 \centering
 \begin{figure}
-	%\begin{subfigure}{.24\paperwidth}
-	%\begin{center}
-	\includegraphics[width=0.8\linewidth]{figs/1bloquesTraining}
-	%\end{center}
-    \caption{Training Stage.}
+	\includegraphics[width=\linewidth]{figs/1bloquesTraining1}
+    \caption{Training Stage}
 	\label{trainingBlocks}
-	\end{figure}
+\end{figure}
 \column{.5\textwidth}
 \centering
-\begin{figure}	
-	%\begin{subfigure}{.24\paperwidth}
-	%\begin{center}
-    \includegraphics[width=0.8\linewidth]{figs/11bloquesTesting}
-	%\end{center}
+\begin{figure}
+    \includegraphics[width=\linewidth]{figs/11bloquesTesting1}
     \caption{Testing Stage.}
-	\label{trainingBlocks}
-
+	\label{testingBlocks}
 \end{figure}
 \end{columns}
+
+\vspace{1ex}
+
+In training stage, after applying a high-pass filter (Pre-emphasis), the signal is split in sets of 160 samples and an energy analysis is performed in order to detect intervals where a word exists. Then, Mel Frequency Cepstral Coefficients are computed and a space vector of MFCC are obtained, and the final step is to estimate a multidimensional probability density function, which will be the acoustic model for a word and a speaker. This model is generated based on Gaussian Mixture Models, using eight gaussians.
+
+Testing stage performs the same steps described for training stage, from pre-emphasis to MFCC computation. The calculated coefficients vector is used as input to pattern classification step. The output parameters of this step are the posterior probability and the negative likelihood of the data given the model. This process is based on equations \ref{prob} and \ref{prob2}, where $v$ is the coefficients vector, $\lambda$ is the model, $w_i$ are weights and $N$ corresponds to normal distribution with mean $\mu$ and variance $\sum$. $M$ is the number of mixtures. The \textit{posterior} function of Matlab estimates the index $\hat{J}$ of the model that maximizes the conditional probability.
+
+\begin{equation}
+   p(v \lvert \lambda)=\sum_{i=1}^{M}w_iN(v \lvert \mu_i,\sum_i) \label{prob}
+\end{equation}
+
+\begin{equation}
+   \hat{J}= max_{j} p(v \lvert \lambda_j) \label{prob2}
+\end{equation}
+
+\vspace{1ex}
+
+Finally, if there is a successfull detection of a word matching a model, a command is sent to the gripper.
+
 \end{block}
-
-
 \end{textblock}
 
 \begin{textblock}{39.5}(43.05,19)
 
 \begin{block}{Results}
+
+Table \ref{performance} shows the performance of the system for two speakers and for changes in the number of Gaussians. The analysis was developed with regard to each command (command performance) and finally with regard to all the commands (global performance).
 
 \begin{table}[h]
 \centering
@@ -106,10 +125,12 @@ The methodology developed along this work is based on two main features. The fir
 \label{performance}
 \end{table}
 
+In table \ref{table_comp} different approaches of speech recognition systems for voice commands are compared. The accuracy is over 85\% in all the solutions. Our system, with 95.09\%, is above the mean of the compared implementations.
+
 \begin{table}[!ht]
 	\small
 	\begin{center}	
-	\begin{tabular}{|c | p{17.5cm} | c|}
+	\begin{tabular}{|c | p{19.5cm} | c|}
 	\hline
 	\textbf{Approach} & \textbf{Description} & \textbf{Performance} \\
 	\hline
